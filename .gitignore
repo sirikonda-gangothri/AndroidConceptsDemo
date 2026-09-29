@@ -13,3 +13,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Ignore all Android Studio project settings
+.idea/
+
+# Ignore all build directories
+build/
+**/build/
