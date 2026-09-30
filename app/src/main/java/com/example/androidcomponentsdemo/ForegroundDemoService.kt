@@ -66,6 +66,5 @@ class ForegroundDemoService : Service() {
 
             manager.createNotificationChannel(channel)
         }
-
     }
 }

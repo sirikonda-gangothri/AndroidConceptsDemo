@@ -50,6 +50,30 @@
 
         <service android:name=".IntentServiceDemoService"
             android:exported="false"/>
+
+        <receiver android:name=".DemoBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.example.androidcomponentsdemo.MY_BROADCAST"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".StaticBroadcastReceiver"
+            android:exported="true"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.AIRPLANE_MODE"/>
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:authorities="com.example.androidcomponentsdemo.provider"
+            android:name=".DemoContentProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>
+
+
+
+

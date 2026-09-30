@@ -1,6 +1,7 @@
 package com.example.androidcomponentsdemo
 
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -20,6 +21,8 @@ import androidx.compose.ui.platform.LocalContext
 
 class MainActivity : ComponentActivity() {
 
+    private val batteryReceiver = BatteryBroadcastReceiver()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -36,6 +39,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
+
+        registerReceiver(
+            batteryReceiver,
+            IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+        )
 
         Toast.makeText(
             this,
@@ -56,6 +64,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onPause() {
         super.onPause()
+
+        unregisterReceiver(batteryReceiver)
 
         Toast.makeText(
             this,
@@ -83,7 +93,40 @@ class MainActivity : ComponentActivity() {
             Toast.LENGTH_SHORT
         ).show()
     }
+
+     fun readFromContentProvider():String{
+        val uri=Uri.parse(
+            "content://com.example.androidcomponentsdemo.provider/data"
+        )
+
+        val cursor = contentResolver.query(
+            uri,
+            null,
+            null,
+            null,
+            null
+        )
+
+        val result=StringBuilder()
+
+        cursor?.use{
+            while(it.moveToNext()){
+                val id=it.getInt(
+                    it.getColumnIndexOrThrow("id")
+                )
+
+                val name=it.getString(
+                    it.getColumnIndexOrThrow("name")
+                )
+
+                result.append("ID:$id\n")
+                result.append("Name : $name\n\n")
+            }
+        }
+        return result.toString()
+    }
 }
+
 
 @Composable
 fun LifecycleScreen() {
@@ -199,6 +242,33 @@ fun LifecycleScreen() {
             }
         ){
             Text("Open Google")
+        }
+
+        Button(
+            onClick = {
+                val intent = Intent(context, DemoBroadcastReceiver::class.java).apply {
+                    action = "com.example.androidcomponentsdemo.MY_BROADCAST"
+                }
+                context.sendBroadcast(intent)
+            }
+        ){
+            Text("Send Broadcast")
+        }
+
+        Button(
+            onClick = {
+                val activity = context as MainActivity
+
+                val result = activity.readFromContentProvider()
+
+                Toast.makeText(
+                    context,
+                    result,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        ) {
+            Text("Read from Content Provider")
         }
     }
 }
